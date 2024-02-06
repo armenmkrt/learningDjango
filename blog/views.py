@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import Post
 from .forms import PostForm
@@ -18,6 +20,8 @@ def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
+            if request.user.is_anonymous:
+                return redirect('admin:index')
             post = form.save(commit=False)
             post.author = request.user
             post.published_date = timezone.now()
